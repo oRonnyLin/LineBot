@@ -1,0 +1,27 @@
+{
+  "name": "linebot",
+  "version": "1.0.0",
+  "description": "Linebot for fun",
+  "main": "linebot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oRonnyLin/LineBot.git"
+  },
+  "keywords": [
+    "linebot"
+  ],
+  "author": "Ronny",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oRonnyLin/LineBot/issues"
+  },
+  "homepage": "https://github.com/oRonnyLin/LineBot#readme",
+  "dependencies": {
+    "@line/bot-sdk": "^6.8.4",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
+}
