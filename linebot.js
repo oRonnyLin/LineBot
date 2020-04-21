@@ -42,15 +42,18 @@ function getProfileName (event) {
     client.getProfile(event.source.userId)
       .then((profile) => {
         console.log(profile.displayName)
-        console.log(profile.userId)
-        console.log(profile.pictureUrl)
-        console.log(profile.statusMessage)
         resolve(profile.displayName)
       })
       .catch((err) => {
         reject(new Error('something went wrong when calling getProfile ', err))
       })
   })
+}
+
+async function asyncGetProfileName (event) {
+  if (event.source.type !== 'user') return null
+  const profile = await client.getProfile(event.source.userId)
+  return profile.displayName
 }
 
 function handleEvent (event) {
@@ -61,8 +64,10 @@ function handleEvent (event) {
     return Promise.resolve(null)
   }
 
-  getProfileName(event)
+  asyncGetProfileName(event)
     .then((displayName) => {
+      console.log(`${displayName} 說 ${event.message.text}`)
+
       const echo = { type: 'text', text: `${displayName} 說 ${event.message.text}` }
       return client.replyMessage(event.replyToken, echo)
     })
