@@ -1,5 +1,4 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const fs = require('fs')
 const https = require('https')
 const line = require('@line/bot-sdk')
@@ -25,19 +24,9 @@ const httpsApp = express()
 //   }
 //   return res.json(responseBody)
 // })
-httpsApp.use(bodyParser.urlencoded({
-  extended: true
-}))
-httpsApp.use(bodyParser.json())
+httpsApp.use(line.middleware(config))
 
-httpsApp.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  next()
-})
-httpsApp.post('/line', line.middleware(config), (req, res) => {
+httpsApp.post('/line', (req, res) => {
   Promise
     .all(req.body.events.map(handleEvent))
     .then((result) => res.json(result))
@@ -47,20 +36,59 @@ httpsApp.post('/line', line.middleware(config), (req, res) => {
     })
 })
 
+function getProfileName (event) {
+  return new Promise((resolve, reject) => {
+    if (event.source.type !== 'user') return resolve(null)
+    client.getProfile(event.source.userId)
+      .then((profile) => {
+        console.log(profile.displayName)
+        console.log(profile.userId)
+        console.log(profile.pictureUrl)
+        console.log(profile.statusMessage)
+        resolve(profile.displayName)
+      })
+      .catch((err) => {
+        reject(new Error('something went wrong when calling getProfile ', err))
+      })
+  })
+}
+
 function handleEvent (event) {
-  console.log(event)
+  console.log('handle line event: ', event)
 
   if (event.type !== 'message' || event.message.type !== 'text') {
     // ignore non-text-message event
     return Promise.resolve(null)
   }
 
+  getProfileName(event)
+    .then((displayName) => {
+      const echo = { type: 'text', text: `${displayName} 說 ${event.message.text}` }
+      return client.replyMessage(event.replyToken, echo)
+    })
+    .catch((err) => {
+      console.log('Error in getProfile', err)
+      return client.replyMessage(event.replyToken, {
+        type: 'text',
+        text: '我在處理訊息時出了問題'
+      })
+    })
+
   // create a echoing text message
-  const echo = { type: 'text', text: event.message.text }
 
   // use reply API
-  return client.replyMessage(event.replyToken, echo)
 }
+httpsApp.use((err, req, res, next) => {
+  if (err instanceof line.SignatureValidationFailed) {
+    res.status(401).send(err.signature)
+    return
+  } else if (err instanceof line.JSONParseError) {
+    res.status(400).send(err.raw)
+    return
+  }
+  next(err) // will throw default 500
+})
+
 const optionshttps = {
   key: fs.readFileSync('/home/ubuntu/ssl/private.key', 'utf8'),
   cert: fs.readFileSync('/home/ubuntu/ssl/certificate.crt', 'utf8'),
