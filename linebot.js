@@ -28,7 +28,7 @@ httpsApp.use(line.middleware(config))
 
 httpsApp.post('/line', (req, res) => {
   Promise
-    .all(req.body.events.map(handleEvent))
+    .all(req.body.events.map(asyncHandleEvent))
     .then((result) => res.json(result))
     .catch((err) => {
       console.error(err)
@@ -82,6 +82,25 @@ function handleEvent (event) {
   // create a echoing text message
 
   // use reply API
+}
+
+async function asyncHandleEvent (event) {
+  console.log('handle line event: ', event)
+  if (event.type !== 'message' || event.message.type !== 'text') return null
+  try {
+    const displayName = await asyncGetProfileName(event)
+    console.log(`${displayName} 說 ${event.message.text}`)
+    if (displayName === 'Ronny Lin') {
+      const echo = { type: 'text', text: `${displayName} 說 ${event.message.text}` }
+      return client.replyMessage(event.replyToken, echo)
+    }
+  } catch (error) {
+    console.log('Error in getProfile', error)
+    return client.replyMessage(event.replyToken, {
+      type: 'text',
+      text: '我在處理訊息時出了問題'
+    })
+  }
 }
 httpsApp.use((err, req, res, next) => {
   if (err instanceof line.SignatureValidationFailed) {
