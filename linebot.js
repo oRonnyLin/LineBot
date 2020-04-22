@@ -180,7 +180,7 @@ const fetchProvincialData = schedule.scheduleJob('20 23 * * *', async function (
   await writeFileProvincial()
 })
 
-const pushDailyCovidInfo = schedule.scheduleJob('* * * * *', async function (fireDate) {
+const pushDailyCovidInfo = schedule.scheduleJob('30 23 * * *', async function (fireDate) {
   console.log('running push daily covid info schedule ', fireDate)
   const data = await readCSVFile()
   const message = {
@@ -192,7 +192,7 @@ const pushDailyCovidInfo = schedule.scheduleJob('* * * * *', async function (fir
           `現有確診: ${data.bc.numconf - data.bc.numrecover}`,
           `當日確診率: ${data.bc.positiveRate.toFixed(2)} %`,
           `恢復率: ${data.bc.percentrecover.toFixed(2)} %`,
-          `更新: ${data.bc.date.substring(3, 5)}-${data.bc.date.substring(0, 2)} 4PM`
+          `更新: ${data.bc.date.substring(3, 5)}-${data.bc.date.substring(0, 2)} @ 4:00PM`
   ]
   message.text = content.join('\n')
   client.pushMessage(USERID, message, true)
