@@ -32,6 +32,18 @@ function calculateAverage (arr, field) {
   return result
 }
 
+function constructMessageContent (data, field) {
+  const content = [
+    `🚑${data[field].newCasesToday} 🧬${data[field].newTested} 💚${data[field].newRecover}`,
+    `累積確診: ${data[field].numconf}`,
+    `現有確診: ${data[field].numconf - data[field].numrecover - data[field].numdeaths}`,
+    `當日確診率: ${data[field].positiveRate.toFixed(2)} %`,
+    `恢復率: ${data[field].percentrecover.toFixed(2)} %`,
+    `更新: ${data[field].date.subString(3, 5)}-${data[field].date.subString(0, 2)} 4PM`
+  ]
+  return content.join('\n')
+}
+
 function readCSVFile () {
   return new Promise((resolve, reject) => {
     let prevDataBC = null
@@ -41,7 +53,7 @@ function readCSVFile () {
     fs.createReadStream('test.csv')
       .pipe(csv())
       .on('data', (data) => {
-        const { pruid, date, prname, numconf, numprob, numtested, numrecover, percentrecover, numtoday, percentoday } = data
+        const { pruid, date, prname, numconf, numprob, numtested, numdeaths, numrecover, percentrecover, numtoday, percentoday } = data
         if (pruid === '59' || pruid === '1') { // BC & Canada
           const curData = {
             date: date,
@@ -49,6 +61,7 @@ function readCSVFile () {
             numconf: parseInt(numconf) + parseInt(numprob),
             numtested: parseInt(numtested),
             numrecover: parseInt(numrecover),
+            numdeaths: parseInt(numdeaths),
             percentrecover: parseFloat(percentrecover),
             numtoday: parseInt(numtoday),
             percentoday: parseInt(percentoday)
@@ -118,15 +131,7 @@ async function asyncHandleEvent (event) {
       } else if (event.message.text === 'covid19') {
         console.log('returning covid19 data')
         const data = await readCSVFile()
-        const content = [
-          `🚑${data.bc.newCasesToday} 🧬${data.bc.newTested} 💚${data.bc.newRecover}`,
-          `累積確診: ${data.bc.numconf}`,
-          `現有確診: ${data.bc.numconf - data.bc.numrecover}`,
-          `當日確診率: ${data.bc.positiveRate.toFixed(2)} %`,
-          `恢復率: ${data.bc.percentrecover.toFixed(2)} %`,
-          `更新: ${data.bc.date.subString(3, 5)}-${data.bc.date.subString(0, 2)} 4PM`
-        ]
-        message.text = content.join('\n')
+        message.text = constructMessageContent(data, 'bc')
       }
       return client.replyMessage(event.replyToken, message)
     }
@@ -189,7 +194,7 @@ const pushDailyCovidInfo = schedule.scheduleJob('30 23 * * *', async function (f
   const content = [
           `🚑${data.bc.newCasesToday} 🧬${data.bc.newTested} 💚${data.bc.newRecover}`,
           `累積確診: ${data.bc.numconf}`,
-          `現有確診: ${data.bc.numconf - data.bc.numrecover}`,
+          `現有確診: ${data.bc.numconf - data.bc.numrecover - data.bc.numdeaths}`,
           `當日確診率: ${data.bc.positiveRate.toFixed(2)} %`,
           `恢復率: ${data.bc.percentrecover.toFixed(2)} %`,
           `更新: ${data.bc.date.substring(3, 5)}-${data.bc.date.substring(0, 2)} @ 4:00PM`
