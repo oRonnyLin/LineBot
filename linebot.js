@@ -117,6 +117,7 @@ async function asyncHandleEvent (event) {
         console.log('returning covid19 data')
         const data = await readCSVFile()
         const content = [
+          `🗓${data.bc.date}`,
           `🚑${data.bc.newCasesToday} 🧬${data.bc.newTested} 💚${data.bc.newRecover}`,
           `累積確診: ${data.bc.numconf}`,
           `現有確診: ${data.bc.numconf - data.bc.numrecover}`,
