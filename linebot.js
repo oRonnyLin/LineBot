@@ -131,7 +131,21 @@ async function asyncHandleEvent (event) {
       } else if (event.message.text === 'covid19') {
         console.log('returning covid19 data')
         const data = await readCSVFile()
-        message.text = constructMessageContent(data, 'bc')
+        message.text = '想看哪個地方?'
+        message.quickReply = {
+          items: [
+            {
+              type: 'message',
+              label: 'BC',
+              text: constructMessageContent(data, 'bc')
+            },
+            {
+              type: 'message',
+              label: 'Canada',
+              text: constructMessageContent(data, 'ca')
+            }
+          ]
+        }
       }
       return client.replyMessage(event.replyToken, message)
     }
@@ -191,15 +205,7 @@ const pushDailyCovidInfo = schedule.scheduleJob('30 23 * * *', async function (f
   const message = {
     type: 'text'
   }
-  const content = [
-          `🚑${data.bc.newCasesToday} 🧬${data.bc.newTested} 💚${data.bc.newRecover}`,
-          `累積確診: ${data.bc.numconf}`,
-          `現有確診: ${data.bc.numconf - data.bc.numrecover - data.bc.numdeaths}`,
-          `當日確診率: ${data.bc.positiveRate.toFixed(2)} %`,
-          `恢復率: ${data.bc.percentrecover.toFixed(2)} %`,
-          `更新: ${data.bc.date.substring(3, 5)}-${data.bc.date.substring(0, 2)} @ 4:00PM`
-  ]
-  message.text = content.join('\n')
+  message.text = constructMessageContent(data, 'bc')
   client.pushMessage(USERID, message, true)
     .then(() => {
       console.log('pushed message to Ronny')
