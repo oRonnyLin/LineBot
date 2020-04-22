@@ -118,7 +118,7 @@ async function asyncHandleEvent (event) {
         const data = await readCSVFile()
         const content = [
           `$: ${data.bc.newCasesToday}`,
-          `New tested: ${data.bc.newTested}`,
+          `🩺: ${data.bc.newTested}`,
           `New Recovered: ${data.bc.newRecover}`,
           `Percent of overall recovered: ${data.bc.percentrecover}`,
           `Test positive rate: ${data.bc.positiveRate}`,
