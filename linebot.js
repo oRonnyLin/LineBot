@@ -181,7 +181,7 @@ const fetchProvincialData = schedule.scheduleJob('20 23 * * *', async function (
 })
 
 const pushDailyCovidInfo = schedule.scheduleJob('* * * * *', async function (fireDate) {
-  console.log('running push daily covid info schedule')
+  console.log('running push daily covid info schedule ', fireDate)
   const data = await readCSVFile()
   const message = {
     type: 'text'
