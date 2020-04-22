@@ -178,6 +178,6 @@ const fetchProvincialData = schedule.scheduleJob('20 23 * * *', function () {
   console.log('running schedule fetch Provincial file')
   writeFileProvincial()
 })
-const testSchedule = schedule.scheduleJob('* * * * *', function () {
+const testSchedule = schedule.scheduleJob('* * * * *', async function () {
   console.log('async function testing schedule')
 })
