@@ -39,7 +39,7 @@ function constructMessageContent (data, field) {
     `現有確診: ${data[field].numconf - data[field].numrecover - data[field].numdeaths}`,
     `當日確診率: ${data[field].positiveRate.toFixed(2)} %`,
     `恢復率: ${data[field].percentrecover.toFixed(2)} %`,
-    `更新: ${data[field].date.substring(3, 5)}-${data[field].date.substring(0, 2)} 4PM`
+    `更新: ${data[field].date.substring(3, 5)}-${data[field].date.substring(0, 2)} @ 4PM`
   ]
   return content.join('\n')
 }
@@ -129,8 +129,7 @@ async function asyncHandleEvent (event) {
         await writeFileProvincial()
         message.text = 'Done writing'
       } else if (event.message.text === 'covid19') {
-        console.log('returning covid19 data')
-        const data = await readCSVFile()
+        console.log('returning covid19 quicky reply options')
         message.text = '想看哪個地方?'
         message.quickReply = {
           items: [
@@ -139,7 +138,7 @@ async function asyncHandleEvent (event) {
               action: {
                 type: 'message',
                 label: 'BC',
-                text: constructMessageContent(data, 'bc')
+                text: 'BC covid19'
               }
             },
             {
@@ -147,19 +146,29 @@ async function asyncHandleEvent (event) {
               action: {
                 type: 'message',
                 label: 'Canada',
-                text: constructMessageContent(data, 'ca')
+                text: 'Canada covid19'
               }
             }
           ]
         }
+      } else if (event.message.text === 'BC covid19') {
+        console.log('returning bc data')
+        const data = await readCSVFile()
+        message.text = constructMessageContent(data, 'bc')
+      } else if (event.message.text === 'Canada covid19') {
+        console.log('returning canada data')
+        const data = await readCSVFile()
+        message.text = constructMessageContent(data, 'ca')
+      } else {
+        return null
       }
-      return client.replyMessage(event.replyToken, message)
+      client.replyMessage(event.replyToken, message)
     }
   } catch (error) {
     console.log('Error in getProfile', error)
     return client.replyMessage(event.replyToken, {
       type: 'text',
-      text: '我在處理訊息時出了問題'
+      text: '咦 好像有哪裡不對勁'
     })
   }
 }
