@@ -135,14 +135,20 @@ async function asyncHandleEvent (event) {
         message.quickReply = {
           items: [
             {
-              type: 'message',
-              label: 'BC',
-              text: constructMessageContent(data, 'bc')
+              type: 'action',
+              action: {
+                type: 'message',
+                label: 'BC',
+                text: constructMessageContent(data, 'bc')
+              }
             },
             {
-              type: 'message',
-              label: 'Canada',
-              text: constructMessageContent(data, 'ca')
+              type: 'action',
+              action: {
+                type: 'message',
+                label: 'Canada',
+                text: constructMessageContent(data, 'ca')
+              }
             }
           ]
         }
