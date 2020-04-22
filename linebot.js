@@ -39,7 +39,7 @@ function constructMessageContent (data, field) {
     `現有確診: ${data[field].numconf - data[field].numrecover - data[field].numdeaths}`,
     `當日確診率: ${data[field].positiveRate.toFixed(2)} %`,
     `恢復率: ${data[field].percentrecover.toFixed(2)} %`,
-    `更新: ${data[field].date.subString(3, 5)}-${data[field].date.subString(0, 2)} 4PM`
+    `更新: ${data[field].date.substring(3, 5)}-${data[field].date.substring(0, 2)} 4PM`
   ]
   return content.join('\n')
 }
