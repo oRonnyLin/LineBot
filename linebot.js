@@ -118,10 +118,10 @@ async function asyncHandleEvent (event) {
         const data = await readCSVFile()
         const content = [
           `🚑${data.bc.newCasesToday} 🧬${data.bc.newTested} 💚${data.bc.newRecover}`,
-          `恢復率: ${data.bc.percentrecover.toFixed(2)} %`,
+          `累積確診: ${data.bc.numconf}`,
+          `現有確診: ${data.bc.numconf - data.bc.numrecover}`,
           `當日確診率: ${data.bc.positiveRate.toFixed(2)} %`,
-          `確診率平均: ${data.bc.avgPosRate.toFixed(2)} %`,
-          `確診量增長百分比: ${data.bc.avgDailyCaseIncasePercent.toFixed(2)} %`
+          `恢復率: ${data.bc.percentrecover.toFixed(2)} %`
         ]
         message.text = content.join('\n')
       }
