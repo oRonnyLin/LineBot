@@ -125,13 +125,12 @@ async function asyncHandleEvent (event) {
           `average test positive rate: ${data.bc.avgPosRate}`,
           `average daily increase in test positive cases: ${data.bc.avgDailyCaseIncasePercent}`
         ]
-        const emojis = [
+        const emojis =
           [{
             index: 0,
             productId: '5ac1bfd5040ab15980c9b435',
             emojiId: '187'
           }]
-        ]
         message.text = content.join('\n')
         message.emojis = emojis
       }
