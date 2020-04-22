@@ -117,20 +117,13 @@ async function asyncHandleEvent (event) {
         console.log('returning covid19 data')
         const data = await readCSVFile()
         const content = [
-          `$${data.bc.newCasesToday} 🩺${data.bc.newTested} 💪${data.bc.newRecover}`,
-          `Percent of overall recovered: ${data.bc.percentrecover}`,
-          `Test positive rate: ${data.bc.positiveRate}`,
-          `average test positive rate: ${data.bc.avgPosRate}`,
-          `average daily increase in test positive cases: ${data.bc.avgDailyCaseIncasePercent}`
+          `😷${data.bc.newCasesToday} 🤒${data.bc.newTested} 💪${data.bc.newRecover}`,
+          `恢復率: ${data.bc.percentrecover.toFixed(2)}%`,
+          `當日確診率: ${data.bc.positiveRate.toFixed(2)}%`,
+          `確診率平均: ${data.bc.avgPosRate}%`,
+          `確診量增長百分比: ${data.bc.avgDailyCaseIncasePercent}%`
         ]
-        const emojis =
-          [{
-            index: 0,
-            productId: '5ac1bfd5040ab15980c9b435',
-            emojiId: '187'
-          }]
         message.text = content.join('\n')
-        message.emojis = emojis
       }
       return client.replyMessage(event.replyToken, message)
     }
