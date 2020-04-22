@@ -8,6 +8,7 @@ const getStreamRegional = bent('http://www.bccdc.ca')
 const csv = require('csv-parser')
 const stream = require('stream')
 const schedule = require('node-schedule')
+const USERID = 'Ua1470586912c9d5b1bd99104d5149deb'
 
 // fetch file at 11:30AM GMT everyday (4:30PM PST)
 async function writeFileProvincial () {
@@ -174,10 +175,30 @@ const optionshttps = {
 }
 https.createServer(optionshttps, httpsApp).listen(443, () => console.log('https server ready at 443!'))
 
-const fetchProvincialData = schedule.scheduleJob('20 23 * * *', function () {
+const fetchProvincialData = schedule.scheduleJob('20 23 * * *', async function () {
   console.log('running schedule fetch Provincial file')
-  writeFileProvincial()
+  await writeFileProvincial()
 })
-const testSchedule = schedule.scheduleJob('* * * * *', async function () {
-  console.log('async function testing schedule')
+
+const pushDailyCovidInfo = schedule.scheduleJob('0 8 * * *', async function () {
+  const data = await readCSVFile()
+  const message = {
+    type: 'text'
+  }
+  const content = [
+          `🚑${data.bc.newCasesToday} 🧬${data.bc.newTested} 💚${data.bc.newRecover}`,
+          `累積確診: ${data.bc.numconf}`,
+          `現有確診: ${data.bc.numconf - data.bc.numrecover}`,
+          `當日確診率: ${data.bc.positiveRate.toFixed(2)} %`,
+          `恢復率: ${data.bc.percentrecover.toFixed(2)} %`,
+          `更新: ${data.bc.date.subString(3, 5)}-${data.bc.date.subString(0, 2)} 4PM`
+  ]
+  message.text = content.join('\n')
+  client.pushMessage(USERID, message, true)
+    .then(() => {
+      console.log('pushed message to Ronny')
+    })
+    .catch((err) => {
+      console.log('something went wrong: ', err)
+    })
 })
