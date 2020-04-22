@@ -7,6 +7,7 @@ const getStreamProvincial = bent('https://health-infobase.canada.ca') // Provinc
 const getStreamRegional = bent('http://www.bccdc.ca')
 const csv = require('csv-parser')
 const stream = require('stream')
+const schedule = require('node-schedule')
 
 // fetch file at 11:30AM GMT everyday (4:30PM PST)
 async function writeFileProvincial () {
@@ -117,12 +118,12 @@ async function asyncHandleEvent (event) {
         console.log('returning covid19 data')
         const data = await readCSVFile()
         const content = [
-          `🗓${data.bc.date}`,
           `🚑${data.bc.newCasesToday} 🧬${data.bc.newTested} 💚${data.bc.newRecover}`,
           `累積確診: ${data.bc.numconf}`,
           `現有確診: ${data.bc.numconf - data.bc.numrecover}`,
           `當日確診率: ${data.bc.positiveRate.toFixed(2)} %`,
-          `恢復率: ${data.bc.percentrecover.toFixed(2)} %`
+          `恢復率: ${data.bc.percentrecover.toFixed(2)} %`,
+          `更新: ${data.bc.date.subString(3, 5)}-${data.bc.date.subString(0, 2)} 4PM`
         ]
         message.text = content.join('\n')
       }
@@ -172,3 +173,11 @@ const optionshttps = {
   ca: fs.readFileSync('/home/ubuntu/ssl/ca_bundle.crt', 'utf8')
 }
 https.createServer(optionshttps, httpsApp).listen(443, () => console.log('https server ready at 443!'))
+
+const fetchProvincialData = schedule.scheduleJob('20 23 * * *', function () {
+  console.log('running schedule fetch Provincial file')
+  writeFileProvincial()
+})
+const testSchedule = schedule.scheduleJob('* * * * *', async function () {
+  console.log('async function testing schedule')
+})
