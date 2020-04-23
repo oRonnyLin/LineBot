@@ -229,3 +229,19 @@ const pushDailyCovidInfo = schedule.scheduleJob('30 23 * * *', async function (f
       console.log('something went wrong: ', err)
     })
 })
+
+const pushDailyCovidInfo = schedule.scheduleJob('23 * * * *', async function (fireDate) {
+  console.log('running push daily covid info schedule ', fireDate)
+  const data = await readCSVFile()
+  const message = {
+    type: 'text'
+  }
+  message.text = constructMessageContent(data, 'bc')
+  client.pushMessage(USERID, message, true)
+    .then(() => {
+      console.log('pushed message to Ronny')
+    })
+    .catch((err) => {
+      console.log('something went wrong: ', err)
+    })
+})
