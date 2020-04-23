@@ -214,7 +214,7 @@ const fetchProvincialData = schedule.scheduleJob('20 23 * * *', async function (
   await writeFileProvincial()
 })
 
-const fetchProvincialDataTEst = schedule.scheduleJob('0 * * * *', async function () {
+const fetchProvincialDataTEst = schedule.scheduleJob('40 0 * * *', async function () {
   console.log('running schedule fetch Provincial fileTest')
   await writeFileProvincial()
 })
@@ -251,7 +251,7 @@ const pushDailyCovidInfoTest = schedule.scheduleJob('23 * * * *', async function
     })
 })
 
-const pushDailyCovidInfoTest2 = schedule.scheduleJob('10 * * * *', async function (fireDate) {
+const pushDailyCovidInfoTest2 = schedule.scheduleJob('50 0 * * *', async function (fireDate) {
   console.log('running push daily covid info scheduleTest2 ', fireDate)
   const data = await readCSVFile()
   const message = {
