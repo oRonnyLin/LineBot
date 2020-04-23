@@ -214,6 +214,11 @@ const fetchProvincialData = schedule.scheduleJob('20 23 * * *', async function (
   await writeFileProvincial()
 })
 
+const fetchProvincialDataTEst = schedule.scheduleJob('0 * * * *', async function () {
+  console.log('running schedule fetch Provincial fileTest')
+  await writeFileProvincial()
+})
+
 const pushDailyCovidInfo = schedule.scheduleJob('30 23 * * *', async function (fireDate) {
   console.log('running push daily covid info schedule ', fireDate)
   const data = await readCSVFile()
@@ -230,8 +235,24 @@ const pushDailyCovidInfo = schedule.scheduleJob('30 23 * * *', async function (f
     })
 })
 
-const pushDailyCovidInfo = schedule.scheduleJob('23 * * * *', async function (fireDate) {
-  console.log('running push daily covid info schedule ', fireDate)
+const pushDailyCovidInfoTest = schedule.scheduleJob('23 * * * *', async function (fireDate) {
+  console.log('running push daily covid info scheduleTest ', fireDate)
+  const data = await readCSVFile()
+  const message = {
+    type: 'text'
+  }
+  message.text = constructMessageContent(data, 'bc')
+  client.pushMessage(USERID, message, true)
+    .then(() => {
+      console.log('pushed message to Ronny')
+    })
+    .catch((err) => {
+      console.log('something went wrong: ', err)
+    })
+})
+
+const pushDailyCovidInfoTest2 = schedule.scheduleJob('10 * * * *', async function (fireDate) {
+  console.log('running push daily covid info scheduleTest2 ', fireDate)
   const data = await readCSVFile()
   const message = {
     type: 'text'
