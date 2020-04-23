@@ -33,7 +33,9 @@ function calculateAverage (arr, field) {
 }
 
 function constructMessageContent (data, field) {
+  const header = field === 'bc' ? 'BC' : 'Canada'
   const content = [
+    `${header} 疫情`,
     `🚑${data[field].newCasesToday} 🧬${data[field].newTested} 💚${data[field].newRecover}`,
     `累積確診: ${data[field].numconf}`,
     `現有確診: ${data[field].numconf - data[field].numrecover - data[field].numdeaths}`,
@@ -209,17 +211,12 @@ const optionshttps = {
 }
 https.createServer(optionshttps, httpsApp).listen(443, () => console.log('https server ready at 443!'))
 
-const fetchProvincialData = schedule.scheduleJob('5 18 * * *', async function () {
+const fetchProvincialData = schedule.scheduleJob('10 16 * * *', async function () {
   console.log('running schedule fetch Provincial file')
   await writeFileProvincial()
 })
 
-const fetchProvincialDataTEst = schedule.scheduleJob('40 0 * * *', async function () {
-  console.log('running schedule fetch Provincial fileTest')
-  await writeFileProvincial()
-})
-
-const pushDailyCovidInfo = schedule.scheduleJob('10 18 * * *', async function (fireDate) {
+const pushDailyCovidInfo = schedule.scheduleJob('15 16 * * *', async function (fireDate) {
   console.log('running push daily covid info schedule ', fireDate)
   const data = await readCSVFile()
   const message = {
@@ -234,42 +231,8 @@ const pushDailyCovidInfo = schedule.scheduleJob('10 18 * * *', async function (f
       console.log('something went wrong: ', err)
     })
 })
-
-const pushDailyCovidInfoTest = schedule.scheduleJob('23 * * * *', async function (fireDate) {
-  console.log('running push daily covid info scheduleTest ', fireDate)
-  const data = await readCSVFile()
-  const message = {
-    type: 'text'
-  }
-  message.text = constructMessageContent(data, 'bc')
-  client.pushMessage(USERID, message, true)
-    .then(() => {
-      console.log('pushed message to Ronny')
-    })
-    .catch((err) => {
-      console.log('something went wrong: ', err)
-    })
-})
-
-const pushDailyCovidInfoTest2 = schedule.scheduleJob('50 0 * * *', async function (fireDate) {
-  console.log('running push daily covid info scheduleTest2 ', fireDate)
-  const data = await readCSVFile()
-  const message = {
-    type: 'text'
-  }
-  message.text = constructMessageContent(data, 'bc')
-  client.pushMessage(USERID, message, true)
-    .then(() => {
-      console.log('pushed message to Ronny')
-    })
-    .catch((err) => {
-      console.log('something went wrong: ', err)
-    })
-})
 console.log(fetchProvincialData.nextInvocation().toString())
-console.log(pushDailyCovidInfoTest2.nextInvocation().toString())
 console.log(pushDailyCovidInfo.nextInvocation().toString())
-console.log(pushDailyCovidInfoTest.nextInvocation().toString())
-console.log(fetchProvincialDataTEst.nextInvocation().toString())
+
 const now = new Date()
 console.log('current time: ', now.toString())
