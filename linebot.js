@@ -266,3 +266,8 @@ const pushDailyCovidInfoTest2 = schedule.scheduleJob('50 0 * * *', async functio
       console.log('something went wrong: ', err)
     })
 })
+console.log(fetchProvincialData.nextInvocation())
+console.log(pushDailyCovidInfoTest2.nextInvocation())
+console.log(pushDailyCovidInfo.nextInvocation())
+console.log(pushDailyCovidInfoTest.nextInvocation())
+console.log(fetchProvincialDataTEst.nextInvocation())
