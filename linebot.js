@@ -126,7 +126,37 @@ async function asyncHandleEvent (event) {
       const message = {
         type: 'text'
       }
-      if (event.message.text === 'write') {
+      if (event.message.text === '泥') {
+        console.log('returning general quick reply options')
+        message.text = '$'
+        message.emojis = [
+          {
+            index: 0,
+            productId: ' 5ac21b4f031a6752fb806d59',
+            emojiId: '100'
+          }
+        ]
+        message.quickReply = {
+          items: [
+            {
+              type: 'action',
+              action: {
+                type: 'message',
+                label: '疫情',
+                text: 'covid19'
+              }
+            },
+            {
+              type: 'action',
+              action: {
+                type: 'message',
+                label: '回憶',
+                text: '請帶我坐上回憶的帆船 欣賞懷舊的風景'
+              }
+            }
+          ]
+        }
+      } else if (event.message.text === 'write') {
         console.log('fetching and writing csv')
         await writeFileProvincial()
         message.text = 'Done writing'
@@ -153,6 +183,10 @@ async function asyncHandleEvent (event) {
             }
           ]
         }
+      } else if (event.message.text === '請帶我坐上回憶的帆船 欣賞懷舊的風景') {
+        message.type = 'image'
+        message.originalContentUrl = 'https://imgur.dcard.tw/5L2Iltj.jpg'
+        message.previewImageUrl = 'https://www.sbo.net/wp-content/uploads/2020/02/taiwan-flag.png'
       } else if (event.message.text === 'BC covid19') {
         console.log('returning bc data')
         const data = await readCSVFile()
