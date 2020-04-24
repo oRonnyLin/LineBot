@@ -211,12 +211,12 @@ const optionshttps = {
 }
 https.createServer(optionshttps, httpsApp).listen(443, () => console.log('https server ready at 443!'))
 
-const fetchProvincialData = schedule.scheduleJob('10 16 * * *', async function () {
+const fetchProvincialData = schedule.scheduleJob('45 16 * * *', async function () {
   console.log('running schedule fetch Provincial file')
   await writeFileProvincial()
 })
 
-const pushDailyCovidInfo = schedule.scheduleJob('15 16 * * *', async function (fireDate) {
+const pushDailyCovidInfo = schedule.scheduleJob('0 17 * * *', async function (fireDate) {
   console.log('running push daily covid info schedule ', fireDate)
   const data = await readCSVFile()
   const message = {
