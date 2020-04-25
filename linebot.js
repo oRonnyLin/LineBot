@@ -244,7 +244,7 @@ const optionshttps = {
 }
 https.createServer(optionshttps, httpsApp).listen(443, () => console.log('https server ready at 443!'))
 
-const fetchProvincialData = schedule.scheduleJob('13 17 * * *', async function () {
+const fetchProvincialData = schedule.scheduleJob('22 17 * * *', async function () {
   console.log('running schedule fetch Provincial file')
   await writeFileProvincial()
 })
