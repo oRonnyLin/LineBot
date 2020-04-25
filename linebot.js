@@ -11,10 +11,10 @@ const schedule = require('node-schedule')
 const USERID = 'Ua1470586912c9d5b1bd99104d5149deb'
 
 // fetch file at 11:30AM GMT everyday (4:30PM PST)
-async function writeFileProvincial () {
+async function writeFileProvincial (filename) {
   const csvfile = await getStreamProvincial('/src/data/covidLive/covid19.csv')
   const buffer = await csvfile.arrayBuffer()
-  fs.writeFileSync('test.csv', buffer)
+  fs.writeFileSync(filename || 'test.csv', buffer)
   console.log('wrote file')
 }
 
@@ -151,14 +151,14 @@ async function asyncHandleEvent (event) {
               action: {
                 type: 'message',
                 label: '回憶',
-                text: '請帶我坐上回憶的帆船 欣賞懷舊的風景'
+                text: '請帶我坐上回憶的帆船去欣賞懷舊的風景'
               }
             }
           ]
         }
       } else if (event.message.text === 'write') {
         console.log('fetching and writing csv')
-        await writeFileProvincial()
+        await writeFileProvincial('ManualWrite.csv')
         message.text = 'Done writing'
       } else if (event.message.text === 'covid19') {
         console.log('returning covid19 quicky reply options')
@@ -186,7 +186,6 @@ async function asyncHandleEvent (event) {
       } else if (event.message.text === '請帶我坐上回憶的帆船 欣賞懷舊的風景') {
         message.type = 'image'
         message.originalContentUrl = 'https://imgur.dcard.tw/5L2Iltj.jpg'
-        message.previewImageUrl = 'https://www.sbo.net/wp-content/uploads/2020/02/taiwan-flag.png'
       } else if (event.message.text === 'BC covid19') {
         console.log('returning bc data')
         const data = await readCSVFile()
@@ -245,7 +244,7 @@ const optionshttps = {
 }
 https.createServer(optionshttps, httpsApp).listen(443, () => console.log('https server ready at 443!'))
 
-const fetchProvincialData = schedule.scheduleJob('45 16 * * *', async function () {
+const fetchProvincialData = schedule.scheduleJob('13 17 * * *', async function () {
   console.log('running schedule fetch Provincial file')
   await writeFileProvincial()
 })
